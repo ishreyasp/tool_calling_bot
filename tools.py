@@ -86,4 +86,52 @@ def calculator_tool(expression: str) -> str:
     except Exception as e:
         return f"Error calculating '{expression}': {str(e)}"
 
-
+def get_current_time(timezone: str = "UTC") -> str:
+    """
+    Get current time in specified timezone.
+    
+    Args:
+        timezone: Timezone string like "UTC", "US/Eastern", "Asia/Tokyo"
+    
+    Returns:
+        Formatted time string with timezone info
+    """
+    if not timezone:
+        timezone = "UTC"
+    
+    try:
+        # Handle common timezone aliases
+        timezone_aliases = {
+            'EST': 'US/Eastern',
+            'PST': 'US/Pacific', 
+            'CST': 'US/Central',
+            'MST': 'US/Mountain',
+            'JST': 'Asia/Tokyo',
+            'GMT': 'GMT',
+            'CET': 'Europe/Paris',
+            'IST': 'Asia/Kolkata'
+        }
+        
+        timezone = timezone_aliases.get(timezone, timezone)
+        
+        # Get timezone object
+        try:
+            tz = pytz.timezone(timezone)
+        except pytz.exceptions.UnknownTimeZoneError:
+            # Try to find similar timezones
+            suggestions = [tz for tz in pytz.all_timezones if timezone.lower() in tz.lower()][:3]
+            suggestion_text = f" Did you mean: {', '.join(suggestions)}?" if suggestions else ""
+            return f"Error: Unknown timezone '{timezone}'.{suggestion_text}"
+        
+        # Get current time in timezone
+        utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
+        local_time = utc_now.astimezone(tz)
+        
+        # Format the time nicely
+        formatted_time = local_time.strftime("%Y-%m-%d %H:%M:%S %Z")
+        day_name = local_time.strftime("%A")
+        
+        return f"Current time in {timezone}: {formatted_time} ({day_name})"
+        
+    except Exception as e:
+        return f"Error getting time for timezone '{timezone}': {str(e)}"
