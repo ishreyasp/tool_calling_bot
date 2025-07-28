@@ -135,3 +135,88 @@ def get_current_time(timezone: str = "UTC") -> str:
         
     except Exception as e:
         return f"Error getting time for timezone '{timezone}': {str(e)}"
+
+def web_search(query: str, num_results: int = 3) -> str:
+    """
+    Search the web and return top results.
+    
+    Args:
+        query: Search terms
+        num_results: Number of results to return (1-5)
+    
+    Returns:
+        Formatted string with search results
+    """
+    if not query or not query.strip():
+        return "Error: Empty search query provided"
+    
+    # Validate num_results
+    if not isinstance(num_results, int) or num_results < 1 or num_results > 5:
+        num_results = 3
+    
+    try:
+        # Use DuckDuckGo Instant Answer API (free and no API key required)
+        encoded_query = quote(query.strip())
+        url = f"https://api.duckduckgo.com/?q={encoded_query}&format=json&no_html=1&skip_disambig=1"
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        results = []
+        
+        # Check for instant answer
+        if data.get('Answer'):
+            results.append(f"Answer: {data['Answer']}")
+            if data.get('AnswerType'):
+                results.append(f"   Source: {data.get('AnswerType', 'DuckDuckGo')}")
+        
+        # Check for abstract (Wikipedia-style results)
+        if data.get('Abstract'):
+            results.append(f"{data['Abstract']}")
+            if data.get('AbstractSource'):
+                results.append(f"   Source: {data['AbstractSource']}")
+                if data.get('AbstractURL'):
+                    results.append(f"   URL: {data['AbstractURL']}")
+        
+        # Check for definition
+        if data.get('Definition'):
+            results.append(f"Definition: {data['Definition']}")
+            if data.get('DefinitionSource'):
+                results.append(f"   Source: {data['DefinitionSource']}")
+        
+        # Check for related topics
+        if data.get('RelatedTopics') and len(results) < num_results:
+            for i, topic in enumerate(data['RelatedTopics'][:num_results - len(results)]):
+                if isinstance(topic, dict) and topic.get('Text'):
+                    results.append(f"Related: {topic['Text'][:200]}...")
+                    if topic.get('FirstURL'):
+                        results.append(f"   URL: {topic['FirstURL']}")
+        
+        # If no results from DuckDuckGo, try a different approach
+        if not results:
+            # Fallback: Use a simple web scraping approach (very basic)
+            search_results = _fallback_search(query, num_results)
+            if search_results:
+                return search_results
+            else:
+                return f"No results found for '{query}'. Try rephrasing your search terms."
+        
+        # Format final results
+        if results:
+            header = f"Search results for '{query}':\n"
+            return header + "\n".join(results)
+        else:
+            return f"No results found for '{query}'. Try different search terms."
+            
+    except requests.exceptions.Timeout:
+        return "Error: Search request timed out. Please try again."
+    except requests.exceptions.RequestException as e:
+        return f"Error: Network error during search - {str(e)}"
+    except Exception as e:
+        return f"Error searching for '{query}': {str(e)}"
