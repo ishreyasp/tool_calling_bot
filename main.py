@@ -296,11 +296,7 @@ def main() -> None:
                 
                 "Always be conversational and explain what tools you're using. "
                 "When using tools, briefly explain why you chose that tool. "
-                "Format your responses to be helpful and easy to read. "
-                
-                "For calculations, handle both simple math and complex expressions. "
-                "For time queries, always specify the timezone clearly. "
-                "For web searches, summarize the most relevant information found."
+                "After getting tool results, provide a complete answer with the actual results."
             )
         }
     ]
@@ -310,10 +306,8 @@ def main() -> None:
     try:
         tools = get_tool_schemas() 
     except Exception as e:
-        print(f"Error executing {tool_name}: {str(e)}")
+        print(f"Error: Failed loading tool schemas: {e}")
         sys.exit(1)
-
-    print("Tool schemas loaded successfully")
 
     # Start the chat interface
     print("Starting chat interface...")
