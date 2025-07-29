@@ -3,9 +3,9 @@
 A chatbot that can use external tools through direct API calls to solve problems it can't answer alone. This bot demonstrates the core concept of AI agents - systems that can reason about when and how to use tools to accomplish tasks.
 
 ## Features
-- 🧮 Calculator Tool: Safely evaluate mathematical expressions including functions like sqrt, sin, cos, etc.
-- 🕐 Time Tool: Get current time in any timezone worldwide
-- 🔍 Web Search Tool: Search the web using DuckDuckGo's API
+- Calculator Tool: Safely evaluate mathematical expressions including functions like sqrt, sin, cos, etc.
+- Time Tool: Get current time in any timezone worldwide
+- Web Search Tool: Search the web using DuckDuckGo's API
 
 ## Quick Start
 1. Clone and Install
