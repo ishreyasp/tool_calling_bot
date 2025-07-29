@@ -1,5 +1,5 @@
 import os
-import openai import OpenAI
+from openai import OpenAI
 from dotenv import load_dotenv
 
 def load_openai_key():
