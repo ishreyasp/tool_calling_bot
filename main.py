@@ -11,12 +11,6 @@ def get_tool_schemas() -> List[Dict[str, Any]]:
     
     Returns:
         List[Dict[str, Any]]: List of tool schema dictionaries in OpenAI format.
-            Each dictionary contains:
-            - type: Always "function" for function calling
-            - function: Dictionary with name, description, and parameters
-                - name: Function name that matches your Python function
-                - description: What the function does (helps LLM decide when to use it)
-                - parameters: JSON Schema defining function parameters
 
     """
 
@@ -89,21 +83,12 @@ def call_appropriate_tool(tool_name: str, arguments: Dict[str, Any]) -> str:
     Execute the appropriate tool function based on the tool call from the LLM.
     
     Args:
-        tool_name (str): Name of the tool to execute. Must match one of:
-            - "calculator_tool": For mathematical calculations
-            - "get_current_time": For timezone-aware time queries
-            - "web_search": For internet search functionality
+        tool_name (str): Name of the tool to execute. 
             
         arguments (Dict[str, Any]): Dictionary of arguments to pass to the tool.
-            The structure depends on the specific tool:
-            - calculator_tool: {"expression": "math expression"}
-            - get_current_time: {"timezone": "timezone string"}
-            - web_search: {"query": "search terms", "num_results": integer}
     
     Returns:
         str: Result from the tool execution, or error message if tool fails.
-            Success format depends on the tool used.
-            Error format: "Error: [description]" or "Error executing [tool]: [details]"
     """
     # Validate tool name and route to appropriate tool function
     try:
@@ -132,10 +117,6 @@ def chat_with_llm(client, messages: List[Dict], tools: List[Dict]) -> str:
     
     Returns:
         str: Final response from the LLM after any tool calls are completed.
-            This is the message content that should be displayed to the user.
-    
-    Raises:
-        Exception: Re-raises any critical errors that prevent communication
     """
 
     print("Sending request to OpenAI...")
@@ -215,7 +196,6 @@ def chat_interface(client, messages: List[Dict], tools: List[Dict]) -> None:
         
     Raises:
         KeyboardInterrupt: When user presses Ctrl+C (handled by caller)
-        Exception: For unexpected errors during chat processing
     """
 
     while True:
