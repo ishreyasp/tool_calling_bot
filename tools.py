@@ -171,7 +171,7 @@ def web_search(query: str, num_results: int = 3) -> str:
     
     # Validate and normalize num_results parameter
     if not isinstance(num_results, int) or num_results < 1 or num_results > 5:
-        num_results = 3  # Reset to default if invalid
+        num_results = 3  
     
     # Clean and prepare query
     clean_query = query.strip()
@@ -190,7 +190,7 @@ def web_search(query: str, num_results: int = 3) -> str:
         
         # Make the API request with timeout protection
         response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()  # Raise exception for HTTP errors
+        response.raise_for_status()  
         
         # Parse JSON response
         data = response.json()
@@ -227,16 +227,6 @@ def web_search(query: str, num_results: int = 3) -> str:
                     if topic.get('FirstURL'):
                         results.append(f"   URL: {topic['FirstURL']}")
         
-        # # If no results from DuckDuckGo API, use fallback system
-        # if not results:
-        #     print(f"No results from DuckDuckGo API, using fallback suggestions")
-        #     fallback_results = _fallback_search(clean_query, num_results)
-        #     if fallback_results:
-        #         return fallback_results
-        #     else:
-        #         return f"No results found for '{clean_query}'. Try rephrasing your search terms or using more specific keywords."
-        
-        # Format and return final results
         if results:
             header = f"Search results for '{clean_query}':\n"
             return header + "\n".join(results)
